@@ -1,0 +1,41 @@
+#ベースとなるLinuxをインストール (WSLにub_testという名前として入る)
+#必要に応じてbatファイルを編集して、Ubuntuのバージョンを変える
+install_ubuntu_base.bat
+
+#Run WSL
+wsl -d ub_test
+
+############
+#WSL上で実行
+###########
+apt update
+apt install -y curl
+curl -OL https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
+
+#以下を実行するとライセンス承諾のためenterやらyesやらを押す必要あり
+sh Miniforge3-Linux-x86_64.sh
+
+#<==========上のインストール作業のために一気にコピーできないので注意======>
+source ~/.bashrc
+conda install -y jupyterlab
+conda clean --all
+apt clean
+
+#wslの起動とともにjupyterを起動する設定
+echo "
+jupyter lab --allow-root
+logout
+" >>~/.profile
+
+
+######
+#WSLをexportする方法
+#gzip.exeをつかつには、別途インストールが必要
+#http://gnuwin32.sourceforge.net/packages/gzip.htm
+wsl --export ub_test - |gzip -9 - > ..\jupyter.tar.gz
+
+#不用になったら以下のコマンドで削除
+wsl --unregister ub_test
+
+
+
